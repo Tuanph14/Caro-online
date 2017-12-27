@@ -123,12 +123,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private int getValue_position(){
+        int rr = 0;
+        int p1 = turnPlay;
+        //row
+        for (int i = 0; i < maxNum; i++) {
+            rr += checkValue(maxNum-1,i,-1,0,p1);
+        }
+        //column
+        for (int i = 0; i < maxNum; i++) {
+            rr += CheckValue(i,maxNum-1,0,-1,p1);
+        }
+        //cross right to left
+        for (int i = maxNum-1; i >=0; i--) {
+            rr += CheckValue(i,maxNum-1,-1,-1,p1);
+        }
+        for (int i = maxNum-2; i >=0; i--) {
+            rr += CheckValue(maxNum-1,i,-1,-1,p1);
+        }
+        //cross left to right
+        for (int i = maxNum-1; i >=0; i--) {
+            rr += CheckValue(i,0,-1,1,p1);
+        }
+        for (int i = maxNum-2; i >=0; i--) {
+            rr += CheckValue(maxNum-1,i,-1,-1,p1);
+        }
+        return rr;
+    }
     private boolean checkWinner() {
 
         if(winner_play != 0) return true;
-
         //check in row
         VectorEnd(xMove,0,0,1,xMove,yMove);
+        //check column
+        VectorEnd(0,yMove,1,0,xMove,yMove);
+        //check left to right
+        if(xMove + yMove >= maxNum-1){
+            VectorEnd(maxNum-1,xMove+yMove-maxNum+1,-1,1,xMove,yMove);
+        }else {
+            VectorEnd(xMove+yMove,0,-1,1,xMove,yMove);
+        }
+        //check right to left
+        if(xMove <= yMove){
+            VectorEnd(xMove-yMove+maxNum-1,maxNum-1,-1,-1,xMove,yMove);
+        }else{
+            VectorEnd(maxNum-1,maxNum-1-(xMove - yMove),-1,-1,xMove,yMove);
+        }
+        if(winner_play != 0)
+            return true;
+        else
+            return false;
         return false;
     }
 
@@ -147,8 +191,34 @@ public class MainActivity extends AppCompatActivity {
                 i += vx;
                 j += vy;
             }
+            while(true){
+                str = str + String.valueOf(valueCell[i][j]);
+                if(str.length() == 5){
+                    EvalEnd(str);
+                    str = str.substring(1,5);
+                }
+                i += vx; j+= vy;
+                if(!inBoard(i,j) || !inside(i, xbelow, xabove) || !inside(j,ybelow, yabove) || winner_play!=0){
+
+                }
+            }
         }
 
+    }
+
+    private boolean inBoard(int i, int j) {
+        if(i<0 || i>maxNum || j <0 || j >maxNum){
+            return false;
+        }
+        return  true;
+    }
+
+    private void EvalEnd(String str) {
+        switch (str){
+            case "11111": winner_play = 1; break;
+            case "22222": winner_play = 2; break;
+            default: break;
+        }
     }
 
     private boolean inside(int i, int xbelow, int xabove) {
